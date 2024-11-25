@@ -1,6 +1,7 @@
 ﻿using ApiPeliculas.Data;
 using ApiPeliculas.Modelos;
 using ApiPeliculas.Repositorio.IRepositorio;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiPeliculas.Repositorio
 {
@@ -14,11 +15,23 @@ namespace ApiPeliculas.Repositorio
 
         }
 
-        public bool ActualizarCategoria(Categoria categoria)
+        public async Task<bool> ActualizarCategoria(Categoria categoria)
         {
-            categoria.FechaCreacion = DateTime.Now;
-            _dbContext.Categorias.Update(categoria);
-            return Guardar();
+            var existingCategoria = await _dbContext.Categorias.FindAsync(categoria.Id);
+            if (existingCategoria == null)
+            {
+                return false; // Si no se encuentra la categoría, devolvemos false.
+            }
+
+            // Si la categoría existe, actualizamos los campos.
+            existingCategoria.NombreCategoria = categoria.NombreCategoria ?? existingCategoria.NombreCategoria;
+            existingCategoria.FechaCreacion = categoria.FechaCreacion != default ? categoria.FechaCreacion : existingCategoria.FechaCreacion;
+
+            // Guardamos los cambios en la base de datos.
+            _dbContext.Categorias.Update(existingCategoria);
+            await _dbContext.SaveChangesAsync();
+
+            return true; // Si la actualización fue exitosa, devolvemos true.
         }
 
         public bool BorrarCategoria(Categoria categoria)
@@ -45,7 +58,7 @@ namespace ApiPeliculas.Repositorio
             return valor;
         }
 
-        public ICollection<Categoria> GetCategoria()
+        public ICollection<Categoria> GetCategorias()
         {
             return _dbContext.Categorias.OrderBy(c => c.NombreCategoria).ToList();
         }
@@ -57,7 +70,8 @@ namespace ApiPeliculas.Repositorio
 
         public bool Guardar()
         {
-            return _dbContext.SaveChanges() >= 0 ? true : false;
+            return _dbContext.SaveChanges() >= 0 ;
         }
+
     }
 }

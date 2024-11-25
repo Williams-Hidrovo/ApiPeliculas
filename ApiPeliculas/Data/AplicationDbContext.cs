@@ -13,5 +13,7 @@ namespace ApiPeliculas.Data
         }
         //---------------------todos los modelos deben pasarse al context
         public DbSet<Categoria> Categorias { get; set; }
+        public DbSet<Pelicula> Peliculas { get; set; }
+
     }
 }
