@@ -10,8 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 // 1----------------------------------- Configurar la cadena de conexion en el Program.cs
+string connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ?? builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AplicationDbContext>(opciones =>
-opciones.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+opciones.UseSqlServer(connectionString));
+
 
 // 2 ----------------------------------- Agregar los repositorios
 builder.Services.AddScoped<ICategoriaRepositorio, CategoriaRepositorio>();

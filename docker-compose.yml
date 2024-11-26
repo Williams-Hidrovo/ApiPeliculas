@@ -1,0 +1,32 @@
+version: '3.4'
+
+networks:
+  mynetworkapi:
+
+
+services:
+  sqlserverdocker:
+     container_name: sql-server-apipeliculas
+     image: mcr.microsoft.com/mssql/server:2022-latest
+     ports:
+        - 8006:1433
+     environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=PassZZ254488**
+     networks:
+      - mynetworkapi
+
+
+
+  apipeliculas:
+    image: ${DOCKER_REGISTRY-}apipeliculas
+    build:
+      context: .
+      dockerfile: ApiPeliculas/Dockerfile
+    networks:
+      - mynetworkapi
+    depends_on:
+    - sqlserverdocker
+    ports:
+    - 5001:8081
+     
