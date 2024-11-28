@@ -11,10 +11,10 @@ ENV DB_CONNECTION_STRING="Server=sqlserverdocker;Database=ApiPeliculas;User Id=s
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["ApiPeliculas/ApiPeliculas.csproj", "ApiPeliculas/"]
-RUN dotnet restore "./ApiPeliculas/ApiPeliculas.csproj"
+COPY ["/ApiPeliculas.csproj", "./"]
+RUN dotnet restore "./ApiPeliculas.csproj"
 COPY . .
-WORKDIR "/src/ApiPeliculas"
+
 RUN dotnet build "./ApiPeliculas.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
