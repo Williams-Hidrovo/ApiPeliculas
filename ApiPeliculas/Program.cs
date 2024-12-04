@@ -3,6 +3,7 @@ using ApiPeliculas.PeliculasMapper;
 using ApiPeliculas.Repositorio;
 using ApiPeliculas.Repositorio.IRepositorio;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -18,6 +19,10 @@ var builder = WebApplication.CreateBuilder(args);
 string connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ?? builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AplicationDbContext>(opciones =>
 opciones.UseSqlServer(connectionString));
+
+
+//9. Soporte para cache
+builder.Services.AddResponseCaching();
 
 
 // 2 ----------------------------------- Agregar los repositorios
@@ -60,12 +65,19 @@ builder.Services.AddAuthentication(
 
     });
 
-builder.Services.AddControllers();
+
+//10. agregar perfil de cache global para usarlo en los controladores
+builder.Services.AddControllers(options =>
+{
+    options.CacheProfiles.Add("PorDefecto20Sec",new CacheProfile() { Duration=20});
+});
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 
-//9. agregar autenticacion Bearer a swagger
+//8. agregar autenticacion Bearer a swagger
 builder.Services.AddSwaggerGen(options => {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {

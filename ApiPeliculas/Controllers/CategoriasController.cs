@@ -41,6 +41,8 @@ namespace ApiPeliculas.Controllers
         }
 
         [HttpGet("{categoriaId:int}",Name= "GetCategoria")]
+        [ResponseCache(CacheProfileName= "PorDefecto20Sec")]    //perfil de cache global
+        //[ResponseCache(Location =ResponseCacheLocation.None,NoStore =true)]    nunca guardara en cache
         [AllowAnonymous]    //permite que no necesite autenticacion
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
