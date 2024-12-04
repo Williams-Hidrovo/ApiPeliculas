@@ -41,12 +41,14 @@ namespace ApiPeliculas.Repositorio
 
         public async Task<UsuarioLoginRespuestaDto> Login(UsuarioLoginDto usuarioLoginDto)
         {
-            var passwordEncriptado=obtenerMD5(usuarioLoginDto.Password);
-            var usuario = _dbContext.Usuarios.FirstOrDefault(u => u.NombreUsuario.ToLower() ==
-            usuarioLoginDto.NombreUsuario.ToLower()
-            && u.Password== passwordEncriptado
-            );
-            //si el usuario no existe con la combinacion de usario y contraseña
+            var passwordEncriptado = obtenermd5(usuarioLoginDto.Password);
+
+            var usuario = _dbContext.Usuarios.FirstOrDefault(
+                u => u.NombreUsuario.ToLower() == usuarioLoginDto.NombreUsuario.ToLower()
+                && u.Password == passwordEncriptado
+                );
+
+            //Validamos si el usuario no existe con la combinación de usuario y contraseña correcta
             if (usuario == null)
             {
                 return new UsuarioLoginRespuestaDto()
@@ -55,67 +57,65 @@ namespace ApiPeliculas.Repositorio
                     Usuario = null
                 };
             }
-            //aqui existe el usuario entonces podemos procesar el login
-            var manejadorToken = new JwtSecurityTokenHandler();
+
+            //Aquí existe el usuario entonces podemos procesar el login
+            var manejadoToken = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(claveSecreta);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name,usuario.NombreUsuario.ToString()),
-                    new Claim(ClaimTypes.Role,usuario.Role.ToString()),
+                    new(ClaimTypes.Name, usuario.NombreUsuario.ToString()),
+                    new(ClaimTypes.Role, usuario.Role)
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
-            var token=manejadorToken.CreateToken(tokenDescriptor);
+            var token = manejadoToken.CreateToken(tokenDescriptor);
 
             UsuarioLoginRespuestaDto usuarioLoginRespuestaDto = new UsuarioLoginRespuestaDto()
             {
-                Token=manejadorToken.WriteToken(token),
-                Role=usuario.Role,
-                Usuario=usuario
+                Token = manejadoToken.WriteToken(token),
+                Usuario = usuario
             };
 
             return usuarioLoginRespuestaDto;
-
-
-            
         }
 
+
+
+        //sadasdsadsds
         public async Task<Usuario> Register(UsuarioRegistroDto usuarioRegistroDto)
         {
-            var passwordEncriptado = obtenerMD5(usuarioRegistroDto.Password);
+            var passwordEncriptado = obtenermd5(usuarioRegistroDto.Password);
+
             Usuario usuario = new Usuario()
             {
-                NombreUsuario= usuarioRegistroDto.NombreUsuario,
-                Password=usuarioRegistroDto.Password,
-                Nombre=usuarioRegistroDto.Nombre,
-                Role=usuarioRegistroDto.Role
+                NombreUsuario = usuarioRegistroDto.NombreUsuario,
+                Password = passwordEncriptado,
+                Nombre = usuarioRegistroDto.Nombre,
+                Role = usuarioRegistroDto.Role
             };
 
             _dbContext.Usuarios.Add(usuario);
             await _dbContext.SaveChangesAsync();
             usuario.Password = passwordEncriptado;
             return usuario;
-
         }
 
-
-        //metodo para encriptar MD5
-        public static string obtenerMD5(string valor)
+        //Método para encriptar contraseña con MD5 se usa tanto en el Acceso como en el Registro
+        public static string obtenermd5(string valor)
         {
-            MD5CryptoServiceProvider x= new MD5CryptoServiceProvider();
-            byte[] data=System.Text.Encoding.UTF8.GetBytes(valor);
-            data=x.ComputeHash(data);
+            MD5CryptoServiceProvider x = new MD5CryptoServiceProvider();
+            byte[] data = System.Text.Encoding.UTF8.GetBytes(valor);
+            data = x.ComputeHash(data);
             string resp = "";
-            for(int i =0;i< data.Length; i++)
-            {
+            for (int i = 0; i < data.Length; i++)
                 resp += data[i].ToString("x2").ToLower();
-            }
             return resp;
         }
+
     }
 }

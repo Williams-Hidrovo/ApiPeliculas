@@ -2,12 +2,12 @@
 using ApiPeliculas.Modelos.Dtos;
 using ApiPeliculas.Repositorio.IRepositorio;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiPeliculas.Controllers
 {
+    [Authorize(Roles = "admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class PeliculasController : ControllerBase
@@ -23,6 +23,7 @@ namespace ApiPeliculas.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]    //permite que no necesite autenticacion
         public IActionResult GetPeliculas()
         {
             var peliculas = _Irepo.GetPeliculas();
@@ -37,6 +38,7 @@ namespace ApiPeliculas.Controllers
         }
 
         [HttpGet("{id:int}",Name = "GetPelicula")]
+        [AllowAnonymous]    //permite que no necesite autenticacion
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -141,6 +143,7 @@ namespace ApiPeliculas.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]    //permite que no necesite autenticacion
         [Route("GetPeliculasEnCategorias/{id:int}")]
         public IActionResult GetPeliculasEnCategoria([FromRoute]int id)
         {
@@ -154,6 +157,7 @@ namespace ApiPeliculas.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]    //permite que no necesite autenticacion
         [Route("Buscar/{search}")]
         public IActionResult Buscar([FromRoute]string search)
         {

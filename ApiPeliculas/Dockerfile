@@ -6,7 +6,7 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-ENV DB_CONNECTION_STRING="Server=sqlserverdocker;Database=ApiPeliculas;User Id=sa;Password=PassZZ254488**;TrustServerCertificate=True;MultipleActiveResultSets=true"
+#ENV DB_CONNECTION_STRING="Server=sqlserverdocker;Database=ApiPeliculas;User Id=sa;Password=Pass12356*;TrustServerCertificate=True;MultipleActiveResultSets=true"
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release

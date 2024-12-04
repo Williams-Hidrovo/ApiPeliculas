@@ -2,10 +2,14 @@
 using ApiPeliculas.Modelos.Dtos;
 using ApiPeliculas.Repositorio.IRepositorio;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiPeliculas.Controllers
 {
+    //authorize protejera todas las rutas
+    [Authorize(Roles="admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriasController : ControllerBase
@@ -20,8 +24,10 @@ namespace ApiPeliculas.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]    //permite que no necesite autenticacion
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [EnableCors("PoliticaCors")]
         public IActionResult GetCategorias()
         {
             var listaCategorias = _IRepo.GetCategorias();
@@ -35,6 +41,7 @@ namespace ApiPeliculas.Controllers
         }
 
         [HttpGet("{categoriaId:int}",Name= "GetCategoria")]
+        [AllowAnonymous]    //permite que no necesite autenticacion
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
