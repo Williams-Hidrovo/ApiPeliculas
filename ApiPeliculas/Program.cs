@@ -2,13 +2,13 @@ using ApiPeliculas.Data;
 using ApiPeliculas.PeliculasMapper;
 using ApiPeliculas.Repositorio;
 using ApiPeliculas.Repositorio.IRepositorio;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using XAct;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +22,24 @@ opciones.UseSqlServer(connectionString));
 
 
 //9. Soporte para cache
-builder.Services.AddResponseCaching();
+
+//soporte para versionamiento
+var apiVersioningBuilder = builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+    //options.ApiVersionReader = ApiVersionReader.Combine(
+    //    new QueryStringApiVersionReader("api-version")//? api-version=1.0
+    //    );
+});
+
+//14 configurar api version
+apiVersioningBuilder.AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
 
 
 // 2 ----------------------------------- Agregar los repositorios
@@ -73,6 +90,11 @@ builder.Services.AddControllers(options =>
 });
 
 
+//11. instalar paquetes de versionamiento de api | Asp.Versioning.Mvc | Asp.Versioning.Mvc.ApiExplorer
+//12. soporte para versionamiento
+builder.Services.AddApiVersioning();
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -107,6 +129,26 @@ builder.Services.AddSwaggerGen(options => {
         }
 
     });
+    //16 agregar info de la api y su version
+    
+    options.SwaggerDoc("v1",new OpenApiInfo
+    {
+        Version = "v1.0", // Versión de la API
+        Title = "ApiPeliculas", // Título de la API
+        Description = "API para manejar películas, incluyendo la gestión de películas, actores y géneros.", // Descripción de lo que hace la API
+        TermsOfService=new Uri("https://will-antonio.com"),
+        Contact = new OpenApiContact
+        {
+            Name = "williams Hidrovo",
+            Url = new Uri("https://tu-website.com") // Página web o repositorio
+        },
+        License = new OpenApiLicense
+        {
+            Name = "licencia personal",
+            Url = new Uri("https://opensource.org/licenses/MIT") // Licencia de uso
+        }
+    });
+    
 
 }
 );
@@ -119,7 +161,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    //15. documentar swagger
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json","ApiPeliculasV1");
+    });
 }
 
 app.UseHttpsRedirection();

@@ -1,6 +1,7 @@
 ﻿using ApiPeliculas.Modelos;
 using ApiPeliculas.Modelos.Dtos;
 using ApiPeliculas.Repositorio.IRepositorio;
+using Asp.Versioning;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -10,7 +11,9 @@ namespace ApiPeliculas.Controllers
 {
     //authorize protejera todas las rutas
     [Authorize(Roles="admin")]
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
+    [Route("api/v{version:ApiVersion}/[controller]")]
     [ApiController]
     public class CategoriasController : ControllerBase
     {
@@ -24,6 +27,7 @@ namespace ApiPeliculas.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [AllowAnonymous]    //permite que no necesite autenticacion
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -40,7 +44,20 @@ namespace ApiPeliculas.Controllers
             return Ok(listaCategoriasDto);
         }
 
+
+        [HttpGet]
+        [AllowAnonymous]
+        [MapToApiVersion("2.0")]
+        public IEnumerable<string> Get()
+        {
+            return new string[] { "valor1", "valor2", "valor3", "valor4" };
+        }
+
+
+
+
         [HttpGet("{categoriaId:int}",Name= "GetCategoria")]
+        [MapToApiVersion("1.0")]
         [ResponseCache(CacheProfileName= "PorDefecto20Sec")]    //perfil de cache global
         //[ResponseCache(Location =ResponseCacheLocation.None,NoStore =true)]    nunca guardara en cache
         [AllowAnonymous]    //permite que no necesite autenticacion
