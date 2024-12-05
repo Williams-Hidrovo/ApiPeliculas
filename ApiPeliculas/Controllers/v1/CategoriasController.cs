@@ -7,19 +7,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ApiPeliculas.Controllers
+namespace ApiPeliculas.Controllers.v1
 {
     //authorize protejera todas las rutas
-    [Authorize(Roles="admin")]
+    [Authorize(Roles = "admin")]
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
-    [Route("api/v{version:ApiVersion}/[controller]")]
+    [Route("api/v{version:ApiVersion}/categorias")]
     [ApiController]
     public class CategoriasController : ControllerBase
     {
         private readonly ICategoriaRepositorio _IRepo;
         private readonly IMapper _mapper;
-        public CategoriasController(ICategoriaRepositorio ctRepo,IMapper imapper)
+        public CategoriasController(ICategoriaRepositorio ctRepo, IMapper imapper)
         {
             _IRepo = ctRepo;
             _mapper = imapper;
@@ -36,7 +35,7 @@ namespace ApiPeliculas.Controllers
         {
             var listaCategorias = _IRepo.GetCategorias();
             var listaCategoriasDto = new List<CategoriaDto>();
-            foreach(var categoria in listaCategorias)
+            foreach (var categoria in listaCategorias)
             {
                 listaCategoriasDto.Add(_mapper.Map<CategoriaDto>(categoria));
             }
@@ -44,21 +43,18 @@ namespace ApiPeliculas.Controllers
             return Ok(listaCategoriasDto);
         }
 
-
-        [HttpGet]
+        [HttpGet("GetString")]
         [AllowAnonymous]
-        [MapToApiVersion("2.0")]
+        [Obsolete("Este endpoint del controlador esta obsoleta")]
         public IEnumerable<string> Get()
         {
             return new string[] { "valor1", "valor2", "valor3", "valor4" };
         }
 
 
-
-
-        [HttpGet("{categoriaId:int}",Name= "GetCategoria")]
+        [HttpGet("{categoriaId:int}", Name = "GetCategoria")]
         [MapToApiVersion("1.0")]
-        [ResponseCache(CacheProfileName= "PorDefecto20Sec")]    //perfil de cache global
+        [ResponseCache(CacheProfileName = "PorDefecto20Sec")]    //perfil de cache global
         //[ResponseCache(Location =ResponseCacheLocation.None,NoStore =true)]    nunca guardara en cache
         [AllowAnonymous]    //permite que no necesite autenticacion
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -82,21 +78,22 @@ namespace ApiPeliculas.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public IActionResult CrearCategoria([FromBody]CrearCategoriaDto crearCategoriaDto)
+        public IActionResult CrearCategoria([FromBody] CrearCategoriaDto crearCategoriaDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (crearCategoriaDto == null) {
+            if (crearCategoriaDto == null)
+            {
                 return BadRequest(ModelState);
             }
 
             if (_IRepo.ExisteCategoria(crearCategoriaDto.NombreCategoria))
             {
-                ModelState.AddModelError("",$"La categoria ya existe");
-                return StatusCode(404,ModelState);
+                ModelState.AddModelError("", $"La categoria ya existe");
+                return StatusCode(404, ModelState);
             }
 
             var categoria = _mapper.Map<Categoria>(crearCategoriaDto);
@@ -117,7 +114,7 @@ namespace ApiPeliculas.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ActualizarPatchCategoria(int categoriaId, [FromBody]  CategoriaDto categoriaDto)
+        public async Task<IActionResult> ActualizarPatchCategoria(int categoriaId, [FromBody] CategoriaDto categoriaDto)
         {
             if (categoriaDto == null)
             {
@@ -135,7 +132,7 @@ namespace ApiPeliculas.Controllers
             existingCategoria.FechaCreacion = categoriaDto.FechaCreacion != default ? categoriaDto.FechaCreacion : existingCategoria.FechaCreacion;
 
             // Llamamos al repositorio para actualizar
-            var updatedSuccessfully =await _IRepo.ActualizarCategoria(existingCategoria);
+            var updatedSuccessfully = await _IRepo.ActualizarCategoria(existingCategoria);
 
             if (!updatedSuccessfully)
             {

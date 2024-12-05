@@ -6,18 +6,18 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ApiPeliculas.Controllers
+namespace ApiPeliculas.Controllers.v1
 {
     [Authorize(Roles = "admin")]
     [ApiVersion("1.0")]
-    [Route("api/v{version:ApiVersion}/[controller]")]
+    [Route("api/v{version:ApiVersion}/peliculas")]
     [ApiController]
     public class PeliculasController : ControllerBase
     {
         private readonly IPeliculaRepositorio _Irepo;
         private readonly IMapper _mapper;
 
-        public PeliculasController(IPeliculaRepositorio irepo,IMapper imapper)
+        public PeliculasController(IPeliculaRepositorio irepo, IMapper imapper)
         {
             _Irepo = irepo;
             _mapper = imapper;
@@ -30,7 +30,7 @@ namespace ApiPeliculas.Controllers
         {
             var peliculas = _Irepo.GetPeliculas();
             var peliculasDto = new List<PeliculaDto>();
-            foreach(var peli in peliculas)
+            foreach (var peli in peliculas)
             {
                 peliculasDto.Add(_mapper.Map<PeliculaDto>(peli));
             }
@@ -39,7 +39,7 @@ namespace ApiPeliculas.Controllers
 
         }
 
-        [HttpGet("{id:int}",Name = "GetPelicula")]
+        [HttpGet("{id:int}", Name = "GetPelicula")]
         [AllowAnonymous]    //permite que no necesite autenticacion
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -60,7 +60,7 @@ namespace ApiPeliculas.Controllers
 
 
         [HttpPost]
-        [ProducesResponseType(201,Type=typeof(PeliculaDto))]
+        [ProducesResponseType(201, Type = typeof(PeliculaDto))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -98,7 +98,7 @@ namespace ApiPeliculas.Controllers
 
         [HttpPut]
         [Route("{peliculaId:int}")]
-        public IActionResult ActualizarPelicula([FromRoute]int peliculaId, [FromBody] PeliculaDto peliculaDto)
+        public IActionResult ActualizarPelicula([FromRoute] int peliculaId, [FromBody] PeliculaDto peliculaDto)
         {
             if (!ModelState.IsValid)
             {
@@ -119,7 +119,7 @@ namespace ApiPeliculas.Controllers
 
             if (!_Irepo.ActualizarPelicula(pelicula))
             {
-                return StatusCode(500,ModelState);
+                return StatusCode(500, ModelState);
             }
 
             return NoContent();
@@ -127,7 +127,7 @@ namespace ApiPeliculas.Controllers
 
         [HttpDelete]
         [Route("{id:int}")]
-        public IActionResult BorrarPelicula([FromRoute]int id)
+        public IActionResult BorrarPelicula([FromRoute] int id)
         {
             var existePelicula = _Irepo.GetPelicula(id);
             if (existePelicula == null)
@@ -147,11 +147,11 @@ namespace ApiPeliculas.Controllers
         [HttpGet]
         [AllowAnonymous]    //permite que no necesite autenticacion
         [Route("GetPeliculasEnCategorias/{id:int}")]
-        public IActionResult GetPeliculasEnCategoria([FromRoute]int id)
+        public IActionResult GetPeliculasEnCategoria([FromRoute] int id)
         {
             var peliculas = _Irepo.GetPeliculasEnCategoria(id);
-            var peliculasDto =new  List<PeliculaDto>();
-            foreach(var peli in peliculas)
+            var peliculasDto = new List<PeliculaDto>();
+            foreach (var peli in peliculas)
             {
                 peliculasDto.Add(_mapper.Map<PeliculaDto>(peli));
             }
@@ -161,7 +161,7 @@ namespace ApiPeliculas.Controllers
         [HttpGet]
         [AllowAnonymous]    //permite que no necesite autenticacion
         [Route("Buscar/{search}")]
-        public IActionResult Buscar([FromRoute]string search)
+        public IActionResult Buscar([FromRoute] string search)
         {
             if (string.IsNullOrEmpty(search))
             {
@@ -171,7 +171,7 @@ namespace ApiPeliculas.Controllers
 
             var peliculasDto = new List<PeliculaDto>();
 
-            foreach(var p in peliculas)
+            foreach (var p in peliculas)
             {
                 peliculasDto.Add(_mapper.Map<PeliculaDto>(p));
             }

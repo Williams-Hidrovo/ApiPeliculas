@@ -9,21 +9,22 @@ using System.Net;
 
 namespace ApiPeliculas.Controllers
 {
-    [Authorize(Roles="admin")]
-    [Route("api/v{version:ApiVersion}/[controller]")]
-    [ApiVersion("1.0")]
+    [Authorize(Roles = "admin")]
+    [Route("api/v{version:ApiVersion}/usuarios")]
+    //[ApiVersion("1.0")]
+    [ApiVersionNeutral]     //cuando el controlador no depende de versiones
     [ApiController]
-    public class UsuariosController :ControllerBase
+    public class UsuariosController : ControllerBase
     {
         private readonly IUsuarioRepositorio _IRepo;
         private readonly IMapper _mapper;
         protected RespuestaApi _respuestaApi;
 
-        public UsuariosController(IUsuarioRepositorio Irepo,IMapper mapper)
+        public UsuariosController(IUsuarioRepositorio Irepo, IMapper mapper)
         {
             _IRepo = Irepo;
             _mapper = mapper;
-            this._respuestaApi = new();
+            _respuestaApi = new();
 
         }
 
@@ -52,7 +53,8 @@ namespace ApiPeliculas.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetUsuario(int id) {
+        public IActionResult GetUsuario(int id)
+        {
             var usuario = _IRepo.Getusuario(id);
             if (usuario == null)
             {

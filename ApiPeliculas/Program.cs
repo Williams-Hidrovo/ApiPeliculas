@@ -148,7 +148,25 @@ builder.Services.AddSwaggerGen(options => {
             Url = new Uri("https://opensource.org/licenses/MIT") // Licencia de uso
         }
     });
-    
+
+    options.SwaggerDoc("v2", new OpenApiInfo
+    {
+        Version = "v2.0", // Versión de la API
+        Title = "ApiPeliculas", // Título de la API
+        Description = "API para manejar películas, incluyendo la gestión de películas, actores y géneros.", // Descripción de lo que hace la API
+        TermsOfService = new Uri("https://will-antonio.com"),
+        Contact = new OpenApiContact
+        {
+            Name = "williams Hidrovo",
+            Url = new Uri("https://tu-website.com") // Página web o repositorio
+        },
+        License = new OpenApiLicense
+        {
+            Name = "licencia personal",
+            Url = new Uri("https://opensource.org/licenses/MIT") // Licencia de uso
+        }
+    });
+
 
 }
 );
@@ -165,6 +183,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json","ApiPeliculasV1");
+        options.SwaggerEndpoint("/swagger/v2/swagger.json", "ApiPeliculasV2");
     });
 }
 
