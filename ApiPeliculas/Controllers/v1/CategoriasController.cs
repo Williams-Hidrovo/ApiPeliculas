@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ApiPeliculas.Controllers.v1
 {
     //authorize protejera todas las rutas
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin")]
     [ApiVersion("1.0")]
     [Route("api/v{version:ApiVersion}/categorias")]
     [ApiController]

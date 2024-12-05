@@ -1,9 +1,11 @@
 using ApiPeliculas.Data;
+using ApiPeliculas.Modelos;
 using ApiPeliculas.PeliculasMapper;
 using ApiPeliculas.Repositorio;
 using ApiPeliculas.Repositorio.IRepositorio;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -19,6 +21,10 @@ var builder = WebApplication.CreateBuilder(args);
 string connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ?? builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AplicationDbContext>(opciones =>
 opciones.UseSqlServer(connectionString));
+
+
+//17 soporte para autenticacion con .NET identity
+builder.Services.AddIdentity<AppUsuario, IdentityRole>().AddEntityFrameworkStores<AplicationDbContext>();
 
 
 //9. Soporte para cache
@@ -186,6 +192,10 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v2/swagger.json", "ApiPeliculasV2");
     });
 }
+
+//18 soporte para archivos estaticos como imagenes
+app.UseStaticFiles();
+
 
 app.UseHttpsRedirection();
 

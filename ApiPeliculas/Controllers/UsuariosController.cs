@@ -9,7 +9,7 @@ using System.Net;
 
 namespace ApiPeliculas.Controllers
 {
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "Admin")]
     [Route("api/v{version:ApiVersion}/usuarios")]
     //[ApiVersion("1.0")]
     [ApiVersionNeutral]     //cuando el controlador no depende de versiones
@@ -48,12 +48,12 @@ namespace ApiPeliculas.Controllers
 
 
 
-        [HttpGet("{id:int}", Name = "GetUsuario")]
+        [HttpGet("{id}", Name = "GetUsuario")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetUsuario(int id)
+        public IActionResult GetUsuario(string id)
         {
             var usuario = _IRepo.Getusuario(id);
             if (usuario == null)
@@ -96,8 +96,8 @@ namespace ApiPeliculas.Controllers
 
         }
 
-        [HttpPost("login")]
         [AllowAnonymous]
+        [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

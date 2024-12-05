@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ApiPeliculas.Modelos.Dtos
 {
-    public class PeliculaDto
+    public class ActualizarPeliculaDto
     {
 
         public int Id { get; set; }
@@ -17,6 +17,8 @@ namespace ApiPeliculas.Modelos.Dtos
         public string? RutaImagen { get; set; }
 
         public string? RutaLocalImagen { get; set; }
+
+        public IFormFile Image { get; set; }
 
         public enum TipoClasificacion { Siete, Trece, Dieciseis, Dieciocho }
         public TipoClasificacion Clasificacion { get; set; }

@@ -11,7 +11,9 @@ namespace ApiPeliculas.Modelos.Dtos
 
         public int Duracion { get; set; }
 
-        public string RutaImagen { get; set; }
+        public string? RutaImagen { get; set; }
+
+        public IFormFile Image { get; set; }
 
         public enum CrearTipoClasificacion { Siete, Trece, Dieciseis, Dieciocho }
         public CrearTipoClasificacion Clasificacion { get; set; }
