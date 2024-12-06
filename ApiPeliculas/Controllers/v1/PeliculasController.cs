@@ -26,17 +26,29 @@ namespace ApiPeliculas.Controllers.v1
 
         [HttpGet]
         [AllowAnonymous]    //permite que no necesite autenticacion
-        public IActionResult GetPeliculas()
+        public IActionResult GetPeliculas([FromQuery] int pageNumber=1, [FromQuery] int pageSize = 10)
         {
-            var peliculas = _Irepo.GetPeliculas();
-            var peliculasDto = new List<PeliculaDto>();
-            foreach (var peli in peliculas)
+            try
             {
-                peliculasDto.Add(_mapper.Map<PeliculaDto>(peli));
+                var totalPeliculas = _Irepo.GetTotalPeliculas();
+                var peliculas = _Irepo.GetPeliculas(pageNumber, pageSize);
+
+                var peliculasDto = peliculas.Select(pel => _mapper.Map<PeliculaDto>(pel)).ToList();
+                var response = new
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = (int)Math.Ceiling(totalPeliculas / (double)pageSize),
+                    totalItems = totalPeliculas,
+                    Items = peliculasDto
+                };
+                return Ok(response);
             }
+            catch(Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error recupenrando datos");
 
-            return Ok(peliculasDto);
-
+            }
         }
 
         [HttpGet("{id:int}", Name = "GetPelicula")]
@@ -199,13 +211,18 @@ namespace ApiPeliculas.Controllers.v1
         [Route("GetPeliculasEnCategorias/{id:int}")]
         public IActionResult GetPeliculasEnCategoria([FromRoute] int id)
         {
-            var peliculas = _Irepo.GetPeliculasEnCategoria(id);
-            var peliculasDto = new List<PeliculaDto>();
-            foreach (var peli in peliculas)
+            try
             {
-                peliculasDto.Add(_mapper.Map<PeliculaDto>(peli));
+                var peliculas = _Irepo.GetPeliculasEnCategoria(id);
+                var peliculasDto = peliculas.Select(pelicula => _mapper.Map<PeliculaDto>(pelicula)).ToList();
+
+                return Ok(peliculasDto);
             }
-            return Ok(peliculasDto);
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+           
         }
 
         [HttpGet]
@@ -219,12 +236,8 @@ namespace ApiPeliculas.Controllers.v1
             }
             var peliculas = _Irepo.BuscarPelicula(search);
 
-            var peliculasDto = new List<PeliculaDto>();
+            var peliculasDto = peliculas.Select(pelicula => _mapper.Map<PeliculaDto>(pelicula)).ToList();
 
-            foreach (var p in peliculas)
-            {
-                peliculasDto.Add(_mapper.Map<PeliculaDto>(p));
-            }
             return Ok(peliculasDto);
         }
 

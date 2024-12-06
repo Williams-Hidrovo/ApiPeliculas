@@ -180,18 +180,32 @@ builder.Services.AddSwaggerGen(options => {
 
 
 var app = builder.Build();
+app.UseSwagger();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+
     //15. documentar swagger
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json","ApiPeliculasV1");
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "ApiPeliculasV1");
         options.SwaggerEndpoint("/swagger/v2/swagger.json", "ApiPeliculasV2");
     });
 }
+//19 configuracion para produccion
+else
+{
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "ApiPeliculasV1");
+        options.SwaggerEndpoint("/swagger/v2/swagger.json", "ApiPeliculasV2");
+        options.RoutePrefix = "";
+    });
+
+}
+
 
 //18 soporte para archivos estaticos como imagenes
 app.UseStaticFiles();
